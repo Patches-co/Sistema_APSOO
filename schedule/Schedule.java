@@ -109,6 +109,13 @@ class Schedule {
     		if (e.end.isBefore(d.end)) {
     			d.addEvent(e);
     		} else {
+
+			/*
+				Se o evento estoura o limite de um dia, é quebrado em eventos menores
+    				que são adicionados nos dias seguintes.
+			*/
+
+			
     			List <Event> split = new ArrayList<>();
     			LocalDateTime p = e.start;
     			Duration r = e.duration;
@@ -232,7 +239,6 @@ class Day {
 		end = LocalDateTime.of(d_in, end_in);
     	Events = new LinkedHashMap<>();
     }
-    
     
     public void addEvent(Event e) {
     	
