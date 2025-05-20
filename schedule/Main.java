@@ -15,15 +15,17 @@ public class Main {
 	public static void main(String args[]) throws ClassNotFoundException, SQLException {
 		
 		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/residential", "root", "feb1221a");
+		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/residential", root, user);
 		
+
 		
 		HashMap <Integer, ReservableObject> instalacoes = new HashMap<>();
 		HashMap <Integer, Morador> moradores = new HashMap<>();
 		PriorityQueue <Funcionario> funcionarios = new PriorityQueue<>();
+
+
 		
 		Statement stmt = con.createStatement();
-		
 		
 		
 		ResultSet RS1 = stmt.executeQuery(QUERY1);
@@ -40,7 +42,7 @@ public class Main {
 			moradores.put(m.ID, m);
 		}
 		
-		SalaoFestas s1 = new SalaoFestas();
+
 		
 		ResultSet RS3 = stmt.executeQuery(QUERY4);
 		Object o;
@@ -61,6 +63,9 @@ public class Main {
 					Constructor<?> cstructor = clazz.getConstructor(LocalTime.class, LocalTime.class);
 					o = cstructor.newInstance(start_in, end_in);
 					instalacoes.put(id,(ReservableObject) o);
+
+					//polimorfismo satânico
+					
 				} catch (IllegalArgumentException | NullPointerException | NoSuchMethodException exc){
 					Constructor<?> cstructor = clazz.getConstructor();
 					o = cstructor.newInstance();
@@ -78,6 +83,8 @@ public class Main {
 		      }
 		}//while rs3
 		
+
+
 		
 		Iterator <ReservableObject> ite = instalacoes.values().iterator();
 		ReservableObject rob;
@@ -87,17 +94,28 @@ public class Main {
 			rob.addDay(LocalDate.now(), 7);
 			rob.print_file(rob.toString());
 		}
+		//só checando se deu certo
 		
-		
+
+
+
+		//criando uma reserva para o Morador ID = 1 na data 21/05/2025 às 08:00, com duração de 50 minutos
 		Reserve rsv = new Reserve(
 				moradores.get(1),
 				123,
 				LocalDateTime.of(2025, 5, 21, 8, 0),
 				Duration.ofMinutes(50));
 		
+		//adicionando essa reserva à instalação de ID = 2 (uma quadra)
 		ReservableObject inst = instalacoes.get(2);
 		inst.addReserve(rsv);
+		//classe Reserva checa se há overlap com outra reserva
+		//classe Day checa se a reserva estoura os limites do dia
+		//classe Schedule checa se a reserva está sendo adicionada numa data existente
+
+
 		inst.print_file(inst.toString());
+		
 		
 	}//main
 }
