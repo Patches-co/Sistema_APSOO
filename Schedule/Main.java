@@ -15,12 +15,15 @@ public class Main {
 	public static void main(String args[]) throws ClassNotFoundException, SQLException {
 		
 		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/residential", "root", "feb1221a");
+		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/residential", user, password);
 		
 		
 		HashMap <Integer, ReservableObject> instalacoes = new HashMap<>();
 		HashMap <Integer, Morador> moradores = new HashMap<>();
 		PriorityQueue <Funcionario> funcionarios = new PriorityQueue<>();
+
+
+
 		
 		Statement stmt = con.createStatement();
 		
@@ -40,7 +43,6 @@ public class Main {
 			moradores.put(m.ID, m);
 		}
 		
-		SalaoFestas s1 = new SalaoFestas();
 		
 		ResultSet RS3 = stmt.executeQuery(QUERY4);
 		Object o;
@@ -78,7 +80,7 @@ public class Main {
 		      }
 		}//while rs3
 		
-		
+		//apenas verificando
 		Iterator <ReservableObject> ite = instalacoes.values().iterator();
 		ReservableObject rob;
 		while (ite.hasNext()) {
@@ -88,16 +90,20 @@ public class Main {
 			rob.print_file(rob.toString());
 		}
 		
-		
+
+
+		//criando uma reserva para o Morador 1 na data 21/05/2025 as 08:00, com duração de 50 minutos
 		Reserve rsv = new Reserve(
 				moradores.get(1),
 				123,
 				LocalDateTime.of(2025, 5, 21, 8, 0),
 				Duration.ofMinutes(50));
-		
+		//adicionando essa reserva à instalação 2 (quadra)
 		ReservableObject inst = instalacoes.get(2);
 		inst.addReserve(rsv);
 		inst.print_file(inst.toString());
+
+		
 		
 	}//main
 }
