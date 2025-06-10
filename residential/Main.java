@@ -10,7 +10,7 @@ public class Main {
 
 	public static void main(String[] args) throws ClassNotFoundException, SQLException, Exception {
 		Class.forName("com.mysql.cj.jdbc.Driver");
-		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/RESIDENTIAL", "root", "feb1221a");
+		Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/RESIDENTIAL", "user", "password");
 		
 		Manager manager = new Manager(con);
 			
