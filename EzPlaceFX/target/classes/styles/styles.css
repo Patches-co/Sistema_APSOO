@@ -1,0 +1,52 @@
+/* ---- Paleta de Cores EzPlace ----
+   - Fundo Principal: Branco (#FFFFFF)
+   - Fundo Secundário/Menu: Cinza Escuro (#333645) - Mantendo o menu do dashboard
+   - Cor de Destaque/Primária: Verde (#4CAF50)
+   - Cor de Ação Negativa: Vermelho (#f44336)
+   - Cor de Ação Neutra: Azul (#008CBA)
+   - Texto Principal: Preto (#212121)
+   - Texto em Fundo Escuro: Branco (#FFFFFF)
+*/
+
+/* Estilo geral para todos os botões */
+.button {
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-background-color: #4CAF50; /* Verde padrão */
+    -fx-background-radius: 5;
+}
+
+.button:hover {
+    -fx-opacity: 0.9;
+}
+
+/* Estilos específicos para botões por cor */
+.button-red {
+    -fx-background-color: #f44336; /* Vermelho */
+}
+
+.button-blue {
+    -fx-background-color: #008CBA; /* Azul */
+}
+
+/* Estilo para os cabeçalhos das tabelas */
+.table-view .column-header-background {
+    -fx-background-color: #4CAF50;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Estilo para os botões do menu lateral do Dashboard */
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-text-fill: #e0e0e0;
+    -fx-font-size: 14px;
+}
+
+.menu-button:hover {
+    -fx-background-color: #45495c;
+}

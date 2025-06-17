@@ -155,24 +155,33 @@ public class ReservaDAO {
     }
     
     public List<Reserva> listarPorUsuario(int idUsuario) {
-        String sql = "SELECT r.*, e.nome as nome_espaco FROM reservas r " +
+        // CORREÇÃO: A query SQL agora também faz JOIN com a tabela 'usuarios'
+        String sql = "SELECT r.*, u.nome_completo as nome_usuario, e.nome as nome_espaco " +
+                     "FROM reservas r " +
+                     "JOIN usuarios u ON r.id_usuario = u.id " +
                      "JOIN espacos e ON r.id_espaco = e.id " +
-                     "WHERE r.id_usuario = ? ORDER BY r.data_reserva, r.horario_inicio";
+                     "WHERE r.id_usuario = ? ORDER BY r.data_reserva DESC, r.horario_inicio";
         
         List<Reserva> reservas = new ArrayList<>();
         try (Connection conn = ConexaoDB.getConexao();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
             pstmt.setInt(1, idUsuario);
             ResultSet rs = pstmt.executeQuery();
+
             while (rs.next()) {
                 Reserva res = new Reserva();
+                
+                // CORREÇÃO: Lógica de preenchimento completa, igual à do 'listarTodas'
                 res.setId(rs.getInt("id"));
                 res.setDataReserva(rs.getDate("data_reserva").toLocalDate());
                 res.setHorarioInicio(rs.getTime("horario_inicio").toLocalTime());
                 res.setHorarioFim(rs.getTime("horario_fim").toLocalTime());
-                res.setIdEspaco(rs.getInt("id_espaco"));
                 res.setIdUsuario(rs.getInt("id_usuario"));
+                res.setIdEspaco(rs.getInt("id_espaco"));
+                res.setNomeUsuario(rs.getString("nome_usuario"));
                 res.setNomeEspaco(rs.getString("nome_espaco"));
+                
                 reservas.add(res);
             }
         } catch (SQLException e) {

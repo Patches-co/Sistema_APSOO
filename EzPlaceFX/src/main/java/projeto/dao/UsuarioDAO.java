@@ -36,7 +36,7 @@ public class UsuarioDAO {
         }
     }
     
-    // public Usuario buscarPorEmail(String email)
+    // busca por email
     public Usuario buscarPorEmail(String email) {
         String sql = "SELECT * FROM usuarios WHERE email = ?";
         Usuario usuario = null;
@@ -66,7 +66,35 @@ public class UsuarioDAO {
 
         return usuario;
     }
-    // public List<Usuario> listarTodos() { ... }
+    
+    // busca por nome
+    public List<Usuario> buscarMoradoresPorNome(String nome) {
+        String sql = "SELECT * FROM usuarios WHERE tipo_usuario = 'morador' AND nome_completo ILIKE ? ORDER BY nome_completo";
+        List<Usuario> moradores = new ArrayList<>();
+        try (Connection conn = ConexaoDB.getConexao();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            
+            pstmt.setString(1, "%" + nome + "%");
+            
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                Usuario usuario = new Usuario();
+                usuario.setId(rs.getInt("id"));
+                usuario.setNomeCompleto(rs.getString("nome_completo"));
+                usuario.setEmail(rs.getString("email"));
+                usuario.setUnidade(rs.getString("unidade_apartamento"));
+                usuario.setTipoUsuario(rs.getString("tipo_usuario"));
+                usuario.setTelefone(rs.getString("telefone"));
+                usuario.setCPF(rs.getString("cpf"));
+                moradores.add(usuario);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return moradores;
+    }
+    
+    // listar
     public List<Usuario> listarTodos() {
         String sql = "SELECT * FROM usuarios ORDER BY nome_completo";
         List<Usuario> usuarios = new ArrayList<>();
@@ -119,7 +147,7 @@ public class UsuarioDAO {
         return moradores;
     }
     
-    // public void atualizar(Usuario usuario) { ... }
+    // atualizar
     public void atualizar(Usuario usuario) throws SQLException {
         String sql = "UPDATE usuarios SET nome_completo = ?, email = ?, unidade_apartamento = ?, cpf = ?, telefone = ? WHERE id = ?";
         
@@ -137,7 +165,7 @@ public class UsuarioDAO {
         }
     }
     
-    // public void deletar(int id) { ... }
+    // deletar
     public void deletar(int idUsuario) throws SQLException {
         String sql = "DELETE FROM usuarios WHERE id = ?";
         

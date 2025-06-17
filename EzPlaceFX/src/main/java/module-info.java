@@ -6,6 +6,7 @@ module projeto {
     requires org.kordamp.ikonli.materialdesign;
     requires jakarta.mail;
     requires org.eclipse.angus.mail;
+    requires org.controlsfx.controls;
     
     opens projeto to javafx.fxml;
     exports projeto;

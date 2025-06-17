@@ -7,6 +7,7 @@ package projeto.view;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URL;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -73,7 +74,17 @@ public class LoginController {
 
         Stage stage = new Stage();
         stage.setTitle("EzPlace - Painel de Controle");
-        stage.setScene(new Scene(root));
+        
+        Scene scene = new Scene(root, 1200, 800);
+        
+        URL cssURL = App.class.getResource("/styles/styles.css");
+        if (cssURL != null) {
+            scene.getStylesheets().add(cssURL.toExternalForm());
+        } else {
+            System.err.println("AVISO: Não foi possível encontrar o arquivo styles.css.");
+        }
+        
+        stage.setScene(scene);
         stage.show();
     }
     

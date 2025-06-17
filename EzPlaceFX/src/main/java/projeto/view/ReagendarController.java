@@ -9,6 +9,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -17,6 +18,7 @@ import projeto.dao.EspacoDAO;
 import projeto.dao.ReservaDAO;
 import projeto.model.Espaco;
 import projeto.model.Reserva;
+import projeto.util.Validador;
 /**
  *
  * @author Jvvpa
@@ -42,9 +44,14 @@ public class ReagendarController {
     private void handleConfirmarReagendamento() {
         LocalDate novaData = novaDataPicker.getValue();
         String novoHorarioStr = novoHorarioField.getText();
-
+        // Verifica campos vazios
         if (novaData == null || novoHorarioStr.isEmpty()) {
             mensagemLabel.setText("Por favor, preencha a nova data e horário.");
+            return;
+        }
+        // Verifica se o horário ja está ocupado
+        if (novaData.isBefore(LocalDate.now())) {
+            Validador.mostrarAlerta("Data Inválida", "Não é possível reagendar para uma data que já passou.", AlertType.WARNING);
             return;
         }
 

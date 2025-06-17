@@ -31,6 +31,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.StringConverter;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
 import projeto.App;
 import projeto.dao.EspacoDAO;
 import projeto.dao.ReservaDAO;
@@ -39,14 +41,15 @@ import projeto.model.Espaco;
 import projeto.model.Reserva;
 import projeto.model.Usuario;
 import projeto.util.Validador;
+import org.controlsfx.control.textfield.TextFields;
 
 public class ReservasController implements Initializable {
     
-    private static final int HORA_INICIO = 8;
+    private static final int HORA_INICIO = 7;
     private static final int HORA_FIM = 22;
-    private static final int ALTURA_LINHA_HORA = 40;
+    private static final int ALTURA_LINHA_HORA = 30;
 
-    @FXML private Button btnSemanaAnterior, btnProximaSemana, btnNovaReserva;
+    @FXML private Button btnSemanaAnterior, btnProximaSemana, btnNovaReserva, cancelarButton, reagendarButton;
     @FXML private Label labelSemana, mensagemCancelamentoLabel;
     @FXML private ComboBox<Espaco> filtroEspacoComboBox;
     @FXML private GridPane gridCalendario;
@@ -55,7 +58,6 @@ public class ReservasController implements Initializable {
     @FXML private TableColumn<Reserva, LocalDate> colunaData, colunaHistoricoData;
     @FXML private TableColumn<Reserva, LocalTime> colunaHorario, colunaHistoricoHorario;
     @FXML private TableColumn<Reserva, Integer> colunaReservaId;
-    @FXML private Button cancelarButton, reagendarButton;
     @FXML private ComboBox<Usuario> moradorReservasComboBox;
 
     private EspacoDAO espacoDAO = new EspacoDAO();
@@ -68,7 +70,8 @@ public class ReservasController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         this.dataReferencia = LocalDate.now();
         configurarTabelas();
-        configurarListeners();
+        filtroEspacoComboBox.getSelectionModel().selectedItemProperty().addListener(
+            (obs, oldV, espaco) -> atualizarVisualizacaoCalendario());
         desenharEstruturaCalendario();
     }
     
@@ -76,7 +79,7 @@ public class ReservasController implements Initializable {
         this.usuarioLogado = usuario;
         carregarComboBoxes();
         atualizarVisualizacaoCompleta();
-        carregarHistoricoGeral();
+        configurarBuscaComboBox();
     }
     
     private void configurarTabelas() {
@@ -91,10 +94,22 @@ public class ReservasController implements Initializable {
     }
 
     private void configurarListeners() {
-        moradorReservasComboBox.getSelectionModel().selectedItemProperty().addListener(
-            (obs, oldV, morador) -> carregarReservasDoMorador(morador));
         filtroEspacoComboBox.getSelectionModel().selectedItemProperty().addListener(
             (obs, oldV, espaco) -> atualizarVisualizacaoCalendario());
+            
+        moradorReservasComboBox.getSelectionModel().selectedItemProperty().addListener(
+            (observable, oldValue, moradorSelecionado) -> {
+                System.out.println("--- [DEBUG Listener] Seleção no ComboBox mudou! ---");
+                if (moradorSelecionado != null && moradorSelecionado instanceof Usuario) {
+                    System.out.println("--- [DEBUG Listener] Morador selecionado: " + moradorSelecionado.getNomeCompleto() + " (ID: " + moradorSelecionado.getId() + ") ---");
+                    carregarReservasDoMorador(moradorSelecionado);
+                } else {
+                    System.out.println("--- [DEBUG Listener] Seleção é nula ou não é um objeto Usuario. Limpando tabela. ---");
+                    // Limpa a tabela se o usuário apagar o texto ou a seleção for inválida
+                    if(tabelaReservas != null) tabelaReservas.getItems().clear();
+                }
+            }
+        );
     }
     
     private void desenharEstruturaCalendario() {
@@ -118,7 +133,10 @@ public class ReservasController implements Initializable {
     }
     
     private void atualizarVisualizacaoCalendario() {
-        gridCalendario.getChildren().removeIf(node -> GridPane.getColumnIndex(node) != null && GridPane.getColumnIndex(node) > 0);
+        gridCalendario.getChildren().removeIf(node -> {
+            Integer col = GridPane.getColumnIndex(node);
+            return col != null && col > 0;
+        });
         
         LocalDate inicioSemana = dataReferencia.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         LocalDate fimSemana = inicioSemana.plusDays(6);
@@ -168,18 +186,19 @@ public class ReservasController implements Initializable {
             }
             
             int coluna = reserva.getDataReserva().getDayOfWeek().getValue();
-            if(coluna == 7) { coluna = 0; } // Ajusta Domingo para o primeiro dia
-            coluna = coluna + 1; // Ajusta para a coluna correta da grade
+            if (coluna == 7) { coluna = 0; }
+            coluna = coluna + 1;
 
             int linha = reserva.getHorarioInicio().getHour() - HORA_INICIO + 1;
             
             long duracaoEmMinutos = java.time.Duration.between(reserva.getHorarioInicio(), reserva.getHorarioFim()).toMinutes();
-            double alturaPainel = (duracaoEmMinutos / 60.0) * ALTURA_LINHA_HORA;
+            
+            int rowSpan = (int) Math.ceil(duracaoEmMinutos / 60.0);
+            if (rowSpan == 0) rowSpan = 1;
 
-            if (linha >= 1 && linha < gridCalendario.getRowCount()) {
+            if (linha >= 1) {
                 AnchorPane painelReserva = new AnchorPane();
                 painelReserva.setStyle("-fx-background-color: #3f51b5; -fx-border-color: #1a237e; -fx-background-radius: 5; -fx-opacity: 0.9;");
-                painelReserva.setPrefHeight(alturaPainel);
                 
                 Text textoReserva = new Text(reserva.getNomeEspaco() + "\n(" + reserva.getNomeUsuario() + ")");
                 textoReserva.setFill(Color.WHITE);
@@ -188,8 +207,7 @@ public class ReservasController implements Initializable {
                 AnchorPane.setLeftAnchor(textoReserva, 5.0);
                 painelReserva.getChildren().add(textoReserva);
                 
-                GridPane.setValignment(painelReserva, VPos.TOP);
-                gridCalendario.add(painelReserva, coluna, linha);
+                gridCalendario.add(painelReserva, coluna, linha, 1, rowSpan);
             }
         }
     }
@@ -241,15 +259,16 @@ public class ReservasController implements Initializable {
     
     private void carregarComboBoxes() {
         filtroEspacoComboBox.getItems().setAll(espacoDAO.listarTodos());
-        moradorReservasComboBox.getItems().setAll(usuarioDAO.listarMoradores());
     }
 
     private void carregarReservasDoMorador(Usuario morador) {
-        if (tabelaReservas != null) {
+        if (morador != null) {
+            System.out.println("--- [DEBUG carregarReservas] Carregando reservas para: " + morador.getNomeCompleto() + " ---");
             tabelaReservas.getItems().clear();
-            if (morador != null) {
-                tabelaReservas.getItems().addAll(reservaDAO.listarPorUsuario(morador.getId()));
-            }
+            List<Reserva> minhasReservas = reservaDAO.listarPorUsuario(morador.getId());
+            System.out.println("--- [DEBUG carregarReservas] DAO retornou " + minhasReservas.size() + " reservas. ---");
+            tabelaReservas.getItems().addAll(minhasReservas);
+            System.out.println("--- [DEBUG carregarReservas] Tabela de reservas atualizada. ---");
         }
     }
     
@@ -331,5 +350,47 @@ public class ReservasController implements Initializable {
             Validador.mostrarAlerta("Erro de Carregamento", "Ocorreu um erro ao abrir a tela de reagendamento.", AlertType.ERROR);
             e.printStackTrace();
         }
+    }
+    private void configurarBuscaComboBox() {
+        // --- CONVERSOR ATUALIZADO E FINAL ---
+        StringConverter<Usuario> conversor = new StringConverter<>() {
+            @Override
+            public String toString(Usuario u) {
+                return u == null ? null : u.getNomeCompleto();
+            }
+
+            @Override
+            public Usuario fromString(String string) {
+                // Se o texto for vazio, não faz nada.
+                if (string == null || string.isEmpty()) {
+                    return null;
+                }
+                // Busca no banco por usuários com aquele nome
+                List<Usuario> resultados = usuarioDAO.buscarMoradoresPorNome(string);
+                // Se encontrou exatamente UM resultado com o nome exato, consideramos uma seleção válida.
+                if (resultados.size() == 1) {
+                    return resultados.get(0);
+                }
+                // Se encontrou mais de um ou nenhum, não é uma seleção válida apenas pelo texto.
+                return null;
+            }
+        };
+        
+        moradorReservasComboBox.setConverter(conversor);
+        moradorReservasComboBox.setEditable(true);
+        
+        AutoCompletionBinding<Usuario> binding = TextFields.bindAutoCompletion(
+            moradorReservasComboBox.getEditor(),
+            suggestionRequest -> usuarioDAO.buscarMoradoresPorNome(suggestionRequest.getUserText()),
+            conversor
+        );
+        
+        binding.setOnAutoCompleted(event -> {
+            Usuario moradorSelecionado = event.getCompletion();
+            moradorReservasComboBox.setValue(moradorSelecionado);
+            if (moradorSelecionado != null) {
+                carregarReservasDoMorador(moradorSelecionado);
+            }
+        });
     }
 }

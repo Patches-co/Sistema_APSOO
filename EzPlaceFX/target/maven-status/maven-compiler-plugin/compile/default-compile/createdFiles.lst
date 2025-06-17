@@ -15,6 +15,7 @@ projeto\service\EmailService$1.class
 projeto\model\Reserva.class
 projeto\App.class
 projeto\dao\EspacoDAO.class
+projeto\view\ReservasController$1.class
 projeto\db\ConexaoDB.class
 projeto\view\ReagendarController.class
 projeto\view\CadastroEspacoController.class

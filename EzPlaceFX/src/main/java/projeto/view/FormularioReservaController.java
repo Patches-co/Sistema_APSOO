@@ -73,8 +73,15 @@ public class FormularioReservaController implements Initializable {
         LocalDate data = datePicker.getValue();
         String horarioStr = horarioField.getText();
 
+        // Verifica campos vazios
         if (espacoSelecionado == null || moradorParaReserva == null || data == null || horarioStr.isEmpty()) {
             Validador.mostrarAlerta("Campos Incompletos", "Por favor, preencha todos os campos.", AlertType.WARNING);
+            return;
+        }
+        
+        // Verifica a data
+        if (data.isBefore(LocalDate.now())) {
+            Validador.mostrarAlerta("Data Inválida", "Não é possível fazer reservas para uma data que já passou.", AlertType.WARNING);
             return;
         }
 
@@ -98,6 +105,7 @@ public class FormularioReservaController implements Initializable {
             }
             
             if (reservaDAO.verificarDisponibilidade(espacoSelecionado.getId(), data, horarioInicio, horarioFim)) {
+                
                 Reserva novaReserva = new Reserva();
                 novaReserva.setIdEspaco(espacoSelecionado.getId());
                 novaReserva.setIdUsuario(moradorParaReserva.getId());
@@ -108,7 +116,7 @@ public class FormularioReservaController implements Initializable {
                 reservaDAO.salvar(novaReserva);
 
                 String assunto = "Confirmação de Reserva - EzPlace";
-                String corpo = "Olá, " + moradorParaReserva.getNomeCompleto() + ".\n\n" + "Uma reserva para o espaço '" + espacoSelecionado.getNome() + "' foi confirmada em seu nome com sucesso.\n\n" + "Data: " + novaReserva.getDataReserva() + "\n" + "Horário: de " + novaReserva.getHorarioInicio() + " até " + novaReserva.getHorarioFim() + "\n\n" + "Atenciosamente,\nEquipe EzPlace.";
+                String corpo = "Olá, " + moradorParaReserva.getNomeCompleto() + ".\n\n" + "Sua reserva para o espaço '" + espacoSelecionado.getNome() + "' foi confirmada em seu nome com sucesso.\n\n" + "Data: " + novaReserva.getDataReserva() + "\n" + "Horário: de " + novaReserva.getHorarioInicio() + " até " + novaReserva.getHorarioFim() + "\n\n" + "Atenciosamente,\nEquipe EzPlace.";
                 EmailService.enviarEmail(moradorParaReserva.getEmail(), assunto, corpo);
                 
                 Validador.mostrarAlerta("Sucesso", "Reserva confirmada para " + moradorParaReserva.getNomeCompleto() + "!", AlertType.INFORMATION);

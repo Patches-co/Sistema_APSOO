@@ -10,8 +10,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projeto.view.DashboardController">
-   <left>
+<BorderPane prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projeto.view.DashboardController">   <left>
       <VBox alignment="TOP_CENTER" prefWidth="200.0" spacing="10.0" style="-fx-background-color: #333645;">
          <padding>
             <Insets top="20.0" />
@@ -27,17 +26,17 @@
             <Separator prefWidth="200.0" />
             <VBox style="-fx-padding: 10;" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="btnReservas" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#mostrarTelaReservas" prefHeight="40.0" prefWidth="200.0" text="Fazer/Ver Reservas" textFill="WHITE">
+                  <Button fx:id="btnReservas" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#mostrarTelaReservas" prefHeight="40.0" prefWidth="200.0" text="Fazer/Ver Reservas" styleClass="menu-button" textFill="WHITE">
                      <graphic>
                         <FontIcon iconLiteral="mdi-calendar-clock" iconSize="20" iconColor="white" />
                      </graphic>
                   </Button>
-                  <Button fx:id="btnGestaoUsuarios" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#mostrarTelaGestaoUsuarios" prefHeight="40.0" prefWidth="200.0" text="Gestão de Usuários" textFill="WHITE">
+                  <Button fx:id="btnGestaoUsuarios" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#mostrarTelaGestaoUsuarios" prefHeight="40.0" prefWidth="200.0" text="Gestão de Usuários" styleClass="menu-button" textFill="WHITE">
                      <graphic>
                         <FontIcon iconLiteral="mdi-account-multiple" iconSize="20" iconColor="white" />
                      </graphic>
                   </Button>
-                  <Button fx:id="btnGestaoEspacos" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#mostrarTelaGestaoEspacos" prefHeight="40.0" prefWidth="200.0" text="Gestão de Espaços" textFill="WHITE">
+                  <Button fx:id="btnGestaoEspacos" alignment="BASELINE_LEFT" mnemonicParsing="false" onAction="#mostrarTelaGestaoEspacos" prefHeight="40.0" prefWidth="200.0" text="Gestão de Espaços" styleClass="menu-button" textFill="WHITE">
                      <graphic>
                         <FontIcon iconLiteral="mdi-domain" iconSize="20" iconColor="white" />
                      </graphic>
@@ -48,6 +47,9 @@
       </VBox>
    </left>
    <center>
-      <AnchorPane fx:id="painelConteudo" prefHeight="200.0" prefWidth="200.0" BorderPane.alignment="CENTER" />
+      <AnchorPane fx:id="painelConteudo" prefHeight="200.0" prefWidth="200.0" 
+         AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" 
+         AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" 
+         BorderPane.alignment="CENTER" />
    </center>
 </BorderPane>
