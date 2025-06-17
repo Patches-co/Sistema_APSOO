@@ -17,7 +17,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import projeto.App;
 import projeto.model.Usuario;
 /**
@@ -30,7 +30,7 @@ public class DashboardController implements Initializable{
     @FXML private Button btnReservas;
     @FXML private Button btnGestaoUsuarios;
     @FXML private Button btnGestaoEspacos;
-    @FXML private AnchorPane painelConteudo;
+    @FXML private StackPane painelConteudo;
 
     private Usuario usuarioLogado;
     

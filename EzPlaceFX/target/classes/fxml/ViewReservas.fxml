@@ -14,14 +14,15 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
+<?import javafx.scene.layout.Priority?>
 
-<TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projeto.view.ReservasController">
+<TabPane HBox.hgrow="ALWAYS" VBox.vgrow="ALWAYS" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projeto.view.ReservasController">
   <tabs>
     <Tab text="Calendário de Reservas">
       <content>
-        <BorderPane>
+        <BorderPane VBox.vgrow="ALWAYS" HBox.hgrow="ALWAYS">
           <top>
-            <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 10;">
+            <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 10;" VBox.vgrow="ALWAYS">
               <children>
                 <Label text="Visão Geral da Semana">
                   <font><Font name="System Bold" size="20.0" /></font>
@@ -53,7 +54,7 @@
     </Tab>
     <Tab text="Gestão de Reservas por Morador">
       <content>
-          <VBox alignment="TOP_CENTER" spacing="10.0" style="-fx-padding: 10;">
+          <VBox alignment="TOP_CENTER" spacing="10.0" style="-fx-padding: 10;" VBox.vgrow="ALWAYS">
               <children>
                   <Label text="Selecione um Morador:">
                       <font><Font name="System Bold" size="14.0" /></font>
@@ -79,7 +80,7 @@
     </Tab>
     <Tab text="Histórico Geral">
       <content>
-        <VBox alignment="TOP_CENTER" style="-fx-padding: 10;">
+        <VBox alignment="TOP_CENTER" style="-fx-padding: 10;" VBox.vgrow="ALWAYS">
            <children>
               <TableView fx:id="tabelaHistorico" VBox.vgrow="ALWAYS">
                 <columns>
