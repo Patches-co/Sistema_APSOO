@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<VBox alignment="TOP_CENTER" prefHeight="350.0" prefWidth="400.0" spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projeto.view.EditarEspacoController">
+   <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+   <children>
+      <Label text="Editar Espaço" />
+      <TextField fx:id="nomeField" promptText="Nome do Espaço" />
+      <TextField fx:id="horariosField" promptText="Horários Disponíveis" />
+      <TextField fx:id="duracaoField" promptText="Duração da Reserva (minutos)" />
+      <TextArea fx:id="regrasArea" prefHeight="100.0" promptText="Regras de Uso" />
+      <Button onAction="#handleSalvar" text="Salvar Alterações" />
+      <Label fx:id="mensagemLabel" />
+   </children>
+</VBox>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox spacing="15.0" style="-fx-background-color: #ffffff;" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projeto.view.CadastroEspacoController">
+    <padding>
+        <Insets bottom="25.0" left="25.0" right="25.0" top="25.0" />
+    </padding>
+    <children>
+        <Label text="Cadastro de Novo Espaço" textFill="BLACK">
+            <font>
+                <Font name="System Bold" size="24.0" />
+            </font>
+        </Label>
+        <GridPane hgap="10.0" vgap="10.0">
+            <children>
+                <Label text="Nome do Espaço:" textFill="BLACK" GridPane.rowIndex="0" />
+                <TextField fx:id="nomeEspacoField" promptText="Ex: Piscina, Salão de Festas" GridPane.columnIndex="1" GridPane.rowIndex="0" />
+                
+                <Label text="Horários Disponíveis:" textFill="BLACK" GridPane.rowIndex="1" />
+                <TextField fx:id="horariosField" promptText="Ex: 08:00-22:00" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                
+                <Label text="Tempo Máximo (minutos):" textFill="BLACK" GridPane.rowIndex="2" />
+                <TextField fx:id="tempoMaximoField" promptText="Ex: 120 (para 2 horas)" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+
+                <Label text="Regras de Uso:" textFill="BLACK" GridPane.rowIndex="3" />
+                <TextArea fx:id="regrasArea" prefHeight="100.0" promptText="Digite as regras de utilização do espaço aqui." wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            </children>
+        </GridPane>
+        <Button onAction="#handleCadastrarEspaco" style="-fx-background-color: #4CAF50; -fx-font-weight: bold;" text="Cadastrar Espaço" textFill="WHITE" />
+        <Label fx:id="mensagemLabel" />
+    </children>
+</VBox>

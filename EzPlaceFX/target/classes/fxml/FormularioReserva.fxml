@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projeto.view.FormularioReservaController">
+   <left>
+      <VBox prefWidth="220.0" spacing="10.0" style="-fx-background-color: #f4f4f4; -fx-padding: 10;">
+         <children>
+            <Label text="1. Selecione o Espaço">
+               <font><Font name="System Bold" size="14.0" /></font>
+            </Label>
+            <ListView fx:id="listaEspacos" />
+         </children>
+      </VBox>
+   </left>
+   <center>
+      <VBox alignment="TOP_CENTER" spacing="15.0">
+         <padding><Insets bottom="20.0" left="20.0" right="20.0" top="20.0" /></padding>
+         <children>
+            <Label fx:id="nomeEspacoLabel" text="Fazer Nova Reserva">
+               <font><Font name="System Bold" size="24.0" /></font>
+            </Label>
+            <Label text="2. Selecione o Morador" />
+            <ComboBox fx:id="moradorComboBox" prefWidth="250.0" promptText="Selecione um morador" />
+            <Label text="3. Escolha a Data e Hora" />
+            <DatePicker fx:id="datePicker" promptText="Escolha a data" />
+            <TextField fx:id="horarioField" promptText="Digite o horário (ex: 14:00)" />
+            <Button fx:id="reservarButton" onAction="#handleReservar" style="-fx-background-color: #4CAF50;-fx-font-weight: bold;" text="Confirmar Reserva" textFill="WHITE" />
+            <Label fx:id="mensagemReservaLabel" />
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="projeto.view.ReservasController">
+  <tabs>
+    <Tab text="Calendário de Reservas">
+      <content>
+        <BorderPane>
+          <top>
+            <VBox alignment="CENTER" spacing="10.0" style="-fx-padding: 10;">
+              <children>
+                <Label text="Visão Geral da Semana">
+                  <font><Font name="System Bold" size="20.0" /></font>
+                </Label>
+                <HBox alignment="CENTER" spacing="20.0">
+                  <children>
+                    <Button fx:id="btnSemanaAnterior" onAction="#handleSemanaAnterior" text="&lt; Semana Anterior" />
+                    <Label fx:id="labelSemana" text="16/06/2025 - 22/06/2025">
+                      <font><Font name="System Bold" size="16.0" /></font>
+                    </Label>
+                    <Button fx:id="btnProximaSemana" onAction="#handleProximaSemana" text="Próxima Semana &gt;" />
+                  </children>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="20.0" style="-fx-padding: 10 0 0 0;">
+                  <children>
+                    <Label text="Filtrar por Espaço:" />
+                    <ComboBox fx:id="filtroEspacoComboBox" prefWidth="250.0" promptText="Todos os Espaços" />
+                    <Button fx:id="btnNovaReserva" onAction="#handleAbrirFormularioReserva" style="-fx-background-color: #4CAF50; -fx-font-weight: bold;" text="Nova Reserva (Formulário)" textFill="WHITE" />
+                  </children>
+                </HBox>
+              </children>
+            </VBox>
+          </top>
+          <center>
+            <GridPane fx:id="gridCalendario" gridLinesVisible="true" BorderPane.alignment="CENTER" />
+          </center>
+        </BorderPane>
+      </content>
+    </Tab>
+    <Tab text="Gestão de Reservas por Morador">
+      <content>
+          <VBox alignment="TOP_CENTER" spacing="10.0" style="-fx-padding: 10;">
+              <children>
+                  <Label text="Selecione um Morador para Ver suas Reservas:">
+                      <font><Font name="System Bold" size="14.0" /></font>
+                  </Label>
+                  <ComboBox fx:id="moradorReservasComboBox" prefWidth="300.0" promptText="Selecione..." />
+                  <TableView fx:id="tabelaReservas" VBox.vgrow="ALWAYS">
+                    <columns>
+                      <TableColumn fx:id="colunaEspaco" prefWidth="200.0" text="Espaço" />
+                      <TableColumn fx:id="colunaData" prefWidth="120.0" text="Data" />
+                      <TableColumn fx:id="colunaHorario" prefWidth="150.0" text="Horário" />
+                    </columns>
+                  </TableView>
+                  <HBox alignment="CENTER" spacing="10.0">
+                     <children>
+                        <Button fx:id="reagendarButton" onAction="#handleReagendar" style="-fx-background-color: #ff9800;" text="Reagendar Reserva" textFill="WHITE" />
+                        <Button fx:id="cancelarButton" onAction="#handleCancelarReserva" style="-fx-background-color: #f44336;" text="Cancelar Reserva" textFill="WHITE" />
+                     </children>
+                  </HBox>
+                  <Label fx:id="mensagemCancelamentoLabel" />
+              </children>
+          </VBox>
+      </content>
+    </Tab>
+    <Tab text="Histórico Geral">
+      <content>
+        <VBox alignment="TOP_CENTER" style="-fx-padding: 10;">
+           <children>
+              <TableView fx:id="tabelaHistorico" VBox.vgrow="ALWAYS">
+                <columns>
+                  <TableColumn fx:id="colunaReservaId" prefWidth="50.0" text="ID" />
+                  <TableColumn fx:id="colunaHistoricoUsuario" prefWidth="180.0" text="Usuário" />
+                  <TableColumn fx:id="colunaHistoricoEspaco" prefWidth="180.0" text="Espaço" />
+                  <TableColumn fx:id="colunaHistoricoData" prefWidth="120.0" text="Data" />
+                  <TableColumn fx:id="colunaHistoricoHorario" prefWidth="150.0" text="Horário" />
+                </columns>
+              </TableView>
+           </children>
+        </VBox>
+      </content>
+    </Tab>
+  </tabs>
+</TabPane>
