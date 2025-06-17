@@ -76,6 +76,7 @@ public class ReservasController implements Initializable {
         this.usuarioLogado = usuario;
         carregarComboBoxes();
         atualizarVisualizacaoCompleta();
+        carregarHistoricoGeral();
     }
     
     private void configurarTabelas() {
@@ -97,6 +98,8 @@ public class ReservasController implements Initializable {
     }
     
     private void desenharEstruturaCalendario() {
+        gridCalendario.getColumnConstraints().clear();
+        gridCalendario.getRowConstraints().clear();
         gridCalendario.getColumnConstraints().add(new ColumnConstraints(60));
         for (int i = 0; i < 7; i++) {
             ColumnConstraints col = new ColumnConstraints();
@@ -107,20 +110,22 @@ public class ReservasController implements Initializable {
         for (int i = HORA_INICIO; i <= HORA_FIM; i++) {
             gridCalendario.getRowConstraints().add(new RowConstraints(ALTURA_LINHA_HORA));
         }
+        for (int i = HORA_INICIO; i <= HORA_FIM; i++) {
+            Label labelHora = new Label(String.format("%02d:00", i));
+            GridPane.setHalignment(labelHora, HPos.RIGHT);
+            gridCalendario.add(labelHora, 0, (i - HORA_INICIO) + 1);
+        }
     }
     
     private void atualizarVisualizacaoCalendario() {
-        gridCalendario.getChildren().removeIf(node -> 
-            (GridPane.getRowIndex(node) == null || GridPane.getRowIndex(node) >= 0) &&
-            (GridPane.getColumnIndex(node) == null || GridPane.getColumnIndex(node) > 0)
-        );
+        gridCalendario.getChildren().removeIf(node -> GridPane.getColumnIndex(node) != null && GridPane.getColumnIndex(node) > 0);
+        
         LocalDate inicioSemana = dataReferencia.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
         LocalDate fimSemana = inicioSemana.plusDays(6);
         
-        DateTimeFormatter formatadorTitulo = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        labelSemana.setText(inicioSemana.format(formatadorTitulo) + " - " + fimSemana.format(formatadorTitulo));
+        labelSemana.setText(inicioSemana.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")) + " - " + fimSemana.format(DateTimeFormatter.ofPattern("dd/MM/yyyy")));
         
-        String[] diasNomes = {"Domingo", "Segunda", "Terça", "Quarta", "Quinta", "Sexta", "Sábado"};
+        String[] diasNomes = {"Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"};
         for (int i = 0; i < 7; i++) {
             LocalDate diaAtual = inicioSemana.plusDays(i);
             Label labelDia = new Label(diasNomes[i] + "\n" + diaAtual.format(DateTimeFormatter.ofPattern("dd/MM")));
@@ -138,7 +143,7 @@ public class ReservasController implements Initializable {
         for (int col = 1; col <= 7; col++) {
             for (int row = 1; row <= (HORA_FIM - HORA_INICIO) + 1; row++) {
                 AnchorPane painelClicavel = new AnchorPane();
-                painelClicavel.getStyleClass().add("celula-calendario"); // Adiciona um estilo CSS
+                painelClicavel.getStyleClass().add("celula-calendario");
                 
                 final int colunaFinal = col;
                 final int linhaFinal = row;
@@ -146,7 +151,7 @@ public class ReservasController implements Initializable {
                 painelClicavel.setOnMouseClicked(event -> {
                     LocalDate dataSelecionada = inicioSemana.plusDays(colunaFinal - 1);
                     LocalTime horaSelecionada = LocalTime.of(HORA_INICIO + linhaFinal - 1, 0);
-                    handleAbrirFormularioReserva(dataSelecionada, horaSelecionada);
+                    abrirFormulario(dataSelecionada, horaSelecionada);
                 });
                 gridCalendario.add(painelClicavel, col, row, 1, 1);
             }
@@ -163,13 +168,13 @@ public class ReservasController implements Initializable {
             }
             
             int coluna = reserva.getDataReserva().getDayOfWeek().getValue();
-            if (coluna == 7) { coluna = 0; }
-            
+            if(coluna == 7) { coluna = 0; } // Ajusta Domingo para o primeiro dia
+            coluna = coluna + 1; // Ajusta para a coluna correta da grade
+
             int linha = reserva.getHorarioInicio().getHour() - HORA_INICIO + 1;
             
             long duracaoEmMinutos = java.time.Duration.between(reserva.getHorarioInicio(), reserva.getHorarioFim()).toMinutes();
-            double blocosDeMeiaHora = Math.ceil(duracaoEmMinutos / 30.0);
-            double alturaPainel = blocosDeMeiaHora * (ALTURA_LINHA_HORA / 2.0);
+            double alturaPainel = (duracaoEmMinutos / 60.0) * ALTURA_LINHA_HORA;
 
             if (linha >= 1 && linha < gridCalendario.getRowCount()) {
                 AnchorPane painelReserva = new AnchorPane();
