@@ -26,6 +26,10 @@ import projeto.model.Reserva;
 import projeto.model.Usuario;
 import projeto.service.EmailService;
 import projeto.util.Validador;
+/**
+ *
+ * @author Jvvpa
+ */
 
 public class FormularioReservaController implements Initializable {
     private static final int LIMITE_MENSAL_POR_MORADOR = 5;
@@ -141,9 +145,7 @@ public class FormularioReservaController implements Initializable {
         }
     }
     private void popularComboBoxesDeHorario() {
-        // Popula as horas (de 0 a 23)
         horaComboBox.getItems().addAll(IntStream.rangeClosed(0, 23).boxed().collect(Collectors.toList()));
-        // Popula os minutos (0, 15, 30, 45)
         minutoComboBox.getItems().addAll(0, 15, 30, 45);
     }
 }

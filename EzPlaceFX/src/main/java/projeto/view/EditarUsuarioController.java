@@ -46,16 +46,14 @@ public class EditarUsuarioController implements Initializable {
     
     @FXML
     private void handleSalvar() {
-        // Atualiza o objeto com os novos dados do formulário
         usuarioParaEditar.setNomeCompleto(nomeField.getText());
         usuarioParaEditar.setEmail(emailField.getText());
-        usuarioParaEditar.setUnidade(unidadeField.getText()); // Usando seu método
-        usuarioParaEditar.setCPF(cpfField.getText());         // Usando seu método
+        usuarioParaEditar.setUnidade(unidadeField.getText());
+        usuarioParaEditar.setCPF(cpfField.getText());
         usuarioParaEditar.setTelefone(telefoneField.getText());
 
         try {
             usuarioDAO.atualizar(usuarioParaEditar);
-            // Fecha a janela de edição
             Stage stage = (Stage) nomeField.getScene().getWindow();
             stage.close();
         } catch (Exception e) {

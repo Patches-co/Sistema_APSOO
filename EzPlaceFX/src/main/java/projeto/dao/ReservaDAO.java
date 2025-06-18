@@ -143,7 +143,6 @@ public class ReservaDAO {
                 res.setNomeUsuario(rs.getString("nome_usuario"));
                 res.setNomeEspaco(rs.getString("nome_espaco"));
                 
-                // --- LINHA FALTANTE ADICIONADA ---
                 res.setIdEspaco(rs.getInt("id_espaco"));
                 
                 reservas.add(res);
@@ -155,7 +154,6 @@ public class ReservaDAO {
     }
     
     public List<Reserva> listarPorUsuario(int idUsuario) {
-        // CORREÇÃO: A query SQL agora também faz JOIN com a tabela 'usuarios'
         String sql = "SELECT r.*, u.nome_completo as nome_usuario, e.nome as nome_espaco " +
                      "FROM reservas r " +
                      "JOIN usuarios u ON r.id_usuario = u.id " +
@@ -172,7 +170,6 @@ public class ReservaDAO {
             while (rs.next()) {
                 Reserva res = new Reserva();
                 
-                // CORREÇÃO: Lógica de preenchimento completa, igual à do 'listarTodas'
                 res.setId(rs.getInt("id"));
                 res.setDataReserva(rs.getDate("data_reserva").toLocalDate());
                 res.setHorarioInicio(rs.getTime("horario_inicio").toLocalTime());

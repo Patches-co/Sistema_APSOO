@@ -14,6 +14,10 @@ import javafx.scene.paint.Color;
 import projeto.dao.UsuarioDAO;
 import projeto.model.Usuario;
 import projeto.util.Validador;
+/**
+ *
+ * @author Jvvpa
+ */
 
 public class CadastroUsuarioController implements Initializable{
 
@@ -72,11 +76,9 @@ public class CadastroUsuarioController implements Initializable{
         }
         
         try {
-            // --- LÓGICA CORRIGIDA E FINAL PARA DEFINIR O TIPO DE USUÁRIO ---
             String tipoDeUsuarioFinal;
             
             if (tipoUsuarioComboBox.isVisible()) {
-                // Se a ComboBox está visível (admin logado), pega o valor selecionado.
                 String valorSelecionado = tipoUsuarioComboBox.getValue();
                 if (valorSelecionado == null) {
                     exibirMensagem("Por favor, selecione um tipo de usuário.", true);
@@ -84,10 +86,8 @@ public class CadastroUsuarioController implements Initializable{
                 }
                 tipoDeUsuarioFinal = valorSelecionado.toLowerCase();
             } else {
-                // Se estiver invisível (funcionário logado), o tipo é sempre 'morador'.
                 tipoDeUsuarioFinal = "morador";
             }
-            // --- FIM DA LÓGICA ---
 
             Usuario novoUsuario = new Usuario();
             novoUsuario.setNomeCompleto(nome);
@@ -97,7 +97,6 @@ public class CadastroUsuarioController implements Initializable{
             novoUsuario.setCPF(cpf);
             novoUsuario.setTelefone(telefone);
             
-            // Atribui o tipo correto que acabamos de determinar
             novoUsuario.setTipoUsuario(tipoDeUsuarioFinal);
             
             usuarioDAO.salvar(novoUsuario);
@@ -105,7 +104,6 @@ public class CadastroUsuarioController implements Initializable{
             limparCampos();
 
         } catch (SQLException e) {
-            // Este catch agora funciona porque o método salvar() no DAO declara 'throws SQLException'
             exibirMensagem("Erro ao salvar no banco: " + e.getMessage(), true);
             e.printStackTrace();
         }

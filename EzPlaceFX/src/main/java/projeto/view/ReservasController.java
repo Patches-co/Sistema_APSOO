@@ -15,13 +15,11 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.HPos;
-import javafx.geometry.VPos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -105,7 +103,6 @@ public class ReservasController implements Initializable {
                     carregarReservasDoMorador(moradorSelecionado);
                 } else {
                     System.out.println("--- [DEBUG Listener] Seleção é nula ou não é um objeto Usuario. Limpando tabela. ---");
-                    // Limpa a tabela se o usuário apagar o texto ou a seleção for inválida
                     if(tabelaReservas != null) tabelaReservas.getItems().clear();
                 }
             }
@@ -263,12 +260,12 @@ public class ReservasController implements Initializable {
 
     private void carregarReservasDoMorador(Usuario morador) {
         if (morador != null) {
-            System.out.println("--- [DEBUG carregarReservas] Carregando reservas para: " + morador.getNomeCompleto() + " ---");
+            System.out.println("[DEBUG carregarReservas] Carregando reservas para: " + morador.getNomeCompleto());
             tabelaReservas.getItems().clear();
             List<Reserva> minhasReservas = reservaDAO.listarPorUsuario(morador.getId());
-            System.out.println("--- [DEBUG carregarReservas] DAO retornou " + minhasReservas.size() + " reservas. ---");
+            System.out.println("[DEBUG carregarReservas] DAO retornou " + minhasReservas.size());
             tabelaReservas.getItems().addAll(minhasReservas);
-            System.out.println("--- [DEBUG carregarReservas] Tabela de reservas atualizada. ---");
+            System.out.println("[DEBUG carregarReservas] Tabela de reservas atualizada. ---");
         }
     }
     
@@ -352,7 +349,6 @@ public class ReservasController implements Initializable {
         }
     }
     private void configurarBuscaComboBox() {
-        // --- CONVERSOR ATUALIZADO E FINAL ---
         StringConverter<Usuario> conversor = new StringConverter<>() {
             @Override
             public String toString(Usuario u) {
@@ -361,17 +357,13 @@ public class ReservasController implements Initializable {
 
             @Override
             public Usuario fromString(String string) {
-                // Se o texto for vazio, não faz nada.
                 if (string == null || string.isEmpty()) {
                     return null;
                 }
-                // Busca no banco por usuários com aquele nome
                 List<Usuario> resultados = usuarioDAO.buscarMoradoresPorNome(string);
-                // Se encontrou exatamente UM resultado com o nome exato, consideramos uma seleção válida.
                 if (resultados.size() == 1) {
                     return resultados.get(0);
                 }
-                // Se encontrou mais de um ou nenhum, não é uma seleção válida apenas pelo texto.
                 return null;
             }
         };
