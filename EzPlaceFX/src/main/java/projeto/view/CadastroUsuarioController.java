@@ -1,8 +1,11 @@
 package projeto.view;
 
+import java.net.URL;
 import java.sql.SQLException;
+import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
@@ -12,7 +15,7 @@ import projeto.dao.UsuarioDAO;
 import projeto.model.Usuario;
 import projeto.util.Validador;
 
-public class CadastroUsuarioController {
+public class CadastroUsuarioController implements Initializable{
 
     @FXML private TextField nomeCompletoField;
     @FXML private TextField emailField;
@@ -25,6 +28,12 @@ public class CadastroUsuarioController {
     @FXML private ComboBox<String> tipoUsuarioComboBox;
 
     private UsuarioDAO usuarioDAO = new UsuarioDAO();
+    
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        Validador.aplicarMascara(cpfField, "###.###.###-##");
+        Validador.aplicarMascara(telefoneField, "(##) #####-####");
+    }
 
     public void configurarPara(Usuario usuarioLogado) {
         if ("administrador".equals(usuarioLogado.getTipoUsuario())) {

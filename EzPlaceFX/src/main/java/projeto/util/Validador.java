@@ -7,8 +7,11 @@ package projeto.util;
 import java.util.InputMismatchException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.TextField;
 /**
  *
  * @author Jvvpa
@@ -57,6 +60,37 @@ public class Validador {
         } catch (InputMismatchException e) {
             return false;
         }
+    }
+    public static void aplicarMascara(TextField textField, String mask) {
+        ChangeListener<String> listener = (observable, oldValue, newValue) -> {
+            String digits = newValue.replaceAll("\\D", "");
+            StringBuilder formatted = new StringBuilder();
+            int digitCount = 0;
+            
+            for (int i = 0; i < mask.length() && digitCount < digits.length(); i++) {
+                char maskChar = mask.charAt(i);
+                if (maskChar == '#') {
+                    formatted.append(digits.charAt(digitCount));
+                    digitCount++;
+                } else {
+                    formatted.append(maskChar);
+                }
+            }
+            
+            Platform.runLater(() -> {
+                textField.textProperty().removeListener(Validador.getListener(textField));
+                textField.setText(formatted.toString());
+                textField.textProperty().addListener(Validador.getListener(textField));
+                textField.positionCaret(formatted.length());
+            });
+        };
+        textField.getProperties().put("listener", listener);
+        textField.textProperty().addListener(listener);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private static ChangeListener<String> getListener(TextField textField) {
+        return (ChangeListener<String>) textField.getProperties().get("listener");
     }
     
     public static void mostrarAlerta(String titulo, String mensagem, AlertType tipo) {

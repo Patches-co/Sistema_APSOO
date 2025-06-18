@@ -7,6 +7,8 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
@@ -15,7 +17,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import projeto.dao.EspacoDAO;
 import projeto.dao.ReservaDAO;
@@ -33,9 +34,11 @@ public class FormularioReservaController implements Initializable {
     @FXML private Label nomeEspacoLabel;
     @FXML private ComboBox<Usuario> moradorComboBox;
     @FXML private DatePicker datePicker;
-    @FXML private TextField horarioField;
     @FXML private Button reservarButton;
     @FXML private Label mensagemReservaLabel;
+    
+    @FXML private ComboBox<Integer> horaComboBox;
+    @FXML private ComboBox<Integer> minutoComboBox;
 
     private EspacoDAO espacoDAO = new EspacoDAO();
     private ReservaDAO reservaDAO = new ReservaDAO();
@@ -45,6 +48,7 @@ public class FormularioReservaController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         carregarEspacos();
         carregarMoradoresComboBox();
+        popularComboBoxesDeHorario();
         listaEspacos.getSelectionModel().selectedItemProperty().addListener(
             (observable, oldValue, newValue) -> {
                 if (newValue != null) {
@@ -55,7 +59,8 @@ public class FormularioReservaController implements Initializable {
     
     public void preencherDados(LocalDate data, LocalTime hora) {
         datePicker.setValue(data);
-        horarioField.setText(hora.format(DateTimeFormatter.ofPattern("HH:mm")));
+        horaComboBox.setValue(hora.getHour());
+        minutoComboBox.setValue(hora.getMinute());
     }
 
     private void carregarEspacos() {
@@ -71,10 +76,11 @@ public class FormularioReservaController implements Initializable {
         Espaco espacoSelecionado = listaEspacos.getSelectionModel().getSelectedItem();
         Usuario moradorParaReserva = moradorComboBox.getSelectionModel().getSelectedItem();
         LocalDate data = datePicker.getValue();
-        String horarioStr = horarioField.getText();
+        Integer hora = horaComboBox.getValue();
+        Integer minuto = minutoComboBox.getValue();
 
         // Verifica campos vazios
-        if (espacoSelecionado == null || moradorParaReserva == null || data == null || horarioStr.isEmpty()) {
+        if (espacoSelecionado == null || moradorParaReserva == null || data == null || hora == null || minuto == null) {
             Validador.mostrarAlerta("Campos Incompletos", "Por favor, preencha todos os campos.", AlertType.WARNING);
             return;
         }
@@ -92,7 +98,7 @@ public class FormularioReservaController implements Initializable {
                 return;
             }
 
-            LocalTime horarioInicio = LocalTime.parse(horarioStr);
+            LocalTime horarioInicio = LocalTime.of(hora, minuto);
             LocalTime horarioFim = horarioInicio.plusMinutes(espacoSelecionado.getTempoMaximoReservaMin());
             String horariosDisponiveis = espacoSelecionado.getHorariosDisponiveis();
             if (horariosDisponiveis != null && !horariosDisponiveis.isEmpty() && horariosDisponiveis.contains("-")) {
@@ -133,5 +139,11 @@ public class FormularioReservaController implements Initializable {
             Validador.mostrarAlerta("Erro de Banco de Dados", "Ocorreu um erro ao salvar a reserva.", AlertType.ERROR);
             e.printStackTrace();
         }
+    }
+    private void popularComboBoxesDeHorario() {
+        // Popula as horas (de 0 a 23)
+        horaComboBox.getItems().addAll(IntStream.rangeClosed(0, 23).boxed().collect(Collectors.toList()));
+        // Popula os minutos (0, 15, 30, 45)
+        minutoComboBox.getItems().addAll(0, 15, 30, 45);
     }
 }

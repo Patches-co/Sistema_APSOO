@@ -4,15 +4,19 @@
  */
 package projeto.view;
 
+import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeParseException;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import projeto.dao.EspacoDAO;
 import projeto.dao.ReservaDAO;
@@ -23,30 +27,38 @@ import projeto.util.Validador;
  *
  * @author Jvvpa
  */
-public class ReagendarController {
+public class ReagendarController implements Initializable {
     @FXML private Label infoReservaLabel;
     @FXML private DatePicker novaDataPicker;
-    @FXML private TextField novoHorarioField;
+    @FXML private ComboBox<Integer> horaComboBox;
+    @FXML private ComboBox<Integer> minutoComboBox;
     @FXML private Label mensagemLabel;
 
     private Reserva reservaParaReagendar;
     private ReservaDAO reservaDAO = new ReservaDAO();
     private EspacoDAO espacoDAO = new EspacoDAO();
+    
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        popularComboBoxesDeHorario();
+    }
 
     public void carregarDadosReserva(Reserva reserva) {
         this.reservaParaReagendar = reserva;
-        infoReservaLabel.setText("Reagendando: " + reserva.getNomeEspaco() + " para " + reserva.getNomeUsuario());
+        infoReservaLabel.setText("Reagendando: " + reserva.getNomeEspaco());
         novaDataPicker.setValue(reserva.getDataReserva());
-        novoHorarioField.setText(reserva.getHorarioInicio().toString());
+        horaComboBox.setValue(reserva.getHorarioInicio().getHour());
+        minutoComboBox.setValue(reserva.getHorarioInicio().getMinute());
     }
     
     @FXML
     private void handleConfirmarReagendamento() {
         LocalDate novaData = novaDataPicker.getValue();
-        String novoHorarioStr = novoHorarioField.getText();
-        // Verifica campos vazios
-        if (novaData == null || novoHorarioStr.isEmpty()) {
-            mensagemLabel.setText("Por favor, preencha a nova data e horário.");
+        Integer novaHora = horaComboBox.getValue();
+        Integer novoMinuto = minutoComboBox.getValue();
+
+        if (novaData == null || novaHora == null || novoMinuto == null) {
+            Validador.mostrarAlerta("Campos Incompletos", "Por favor, selecione a nova data e horário.", AlertType.WARNING);
             return;
         }
         // Verifica se o horário ja está ocupado
@@ -62,40 +74,42 @@ public class ReagendarController {
                 return;
             }
             
-            LocalTime novoHorarioInicio = LocalTime.parse(novoHorarioStr);
+            LocalTime novoHorarioInicio = LocalTime.of(novaHora, novoMinuto);
             LocalTime novoHorarioFim = novoHorarioInicio.plusMinutes(espaco.getTempoMaximoReservaMin());
 
             String horariosDisponiveis = espaco.getHorariosDisponiveis();
             if (horariosDisponiveis != null && !horariosDisponiveis.isEmpty() && horariosDisponiveis.contains("-")) {
-                String[] partes = horariosDisponiveis.split("-");
-                LocalTime horarioAbertura = LocalTime.parse(partes[0].trim());
-                LocalTime horarioFechamento = LocalTime.parse(partes[1].trim());
-
+                LocalTime horarioAbertura = LocalTime.parse(horariosDisponiveis.split("-")[0].trim());
+                LocalTime horarioFechamento = LocalTime.parse(horariosDisponiveis.split("-")[1].trim());
                 if (novoHorarioInicio.isBefore(horarioAbertura) || novoHorarioFim.isAfter(horarioFechamento)) {
-                    mensagemLabel.setText("Erro: Fora do horário de funcionamento (" + horariosDisponiveis + ").");
+                    Validador.mostrarAlerta("Horário Inválido", "O novo horário está fora do período de funcionamento (" + horariosDisponiveis + ").", AlertType.WARNING);
                     return;
                 }
             }
 
             if (!reservaDAO.verificarDisponibilidade(espaco.getId(), novaData, novoHorarioInicio, novoHorarioFim)) {
-                 mensagemLabel.setText("Este novo horário já está ocupado.");
+                 Validador.mostrarAlerta("Conflito de Horário", "Este novo horário já está ocupado.", AlertType.WARNING);
                  return;
             }
 
             reservaParaReagendar.setDataReserva(novaData);
             reservaParaReagendar.setHorarioInicio(novoHorarioInicio);
             reservaParaReagendar.setHorarioFim(novoHorarioFim);
-
             reservaDAO.atualizar(reservaParaReagendar);
             
-            Stage stage = (Stage) novoHorarioField.getScene().getWindow();
+            Validador.mostrarAlerta("Sucesso", "Reserva reagendada com sucesso!", AlertType.INFORMATION);
+            
+            Stage stage = (Stage) horaComboBox.getScene().getWindow();
             stage.close();
 
-        } catch (DateTimeParseException e) {
-            mensagemLabel.setText("Formato de hora inválido. Use HH:mm.");
         } catch (SQLException e) {
             mensagemLabel.setText("Erro ao salvar reagendamento.");
             e.printStackTrace();
         }
+    }
+    
+    private void popularComboBoxesDeHorario() {
+        horaComboBox.getItems().addAll(IntStream.rangeClosed(0, 23).boxed().collect(Collectors.toList()));
+        minutoComboBox.getItems().addAll(0, 15, 30, 45);
     }
 }

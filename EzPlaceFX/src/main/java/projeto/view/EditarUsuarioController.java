@@ -4,17 +4,21 @@
  */
 package projeto.view;
 
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import projeto.dao.UsuarioDAO;
 import projeto.model.Usuario;
+import projeto.util.Validador;
 /**
  *
  * @author Jvvpa
  */
-public class EditarUsuarioController {
+public class EditarUsuarioController implements Initializable {
     @FXML private TextField nomeField;
     @FXML private TextField emailField;
     @FXML private TextField unidadeField;
@@ -24,6 +28,12 @@ public class EditarUsuarioController {
 
     private Usuario usuarioParaEditar;
     private UsuarioDAO usuarioDAO = new UsuarioDAO();
+    
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        Validador.aplicarMascara(cpfField, "###.###.###-##");
+        Validador.aplicarMascara(telefoneField, "(##) #####-####");
+    }
 
     public void carregarDadosUsuario(Usuario usuario) {
         this.usuarioParaEditar = usuario;
